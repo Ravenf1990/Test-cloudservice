@@ -20,14 +20,14 @@
     "roles": {
       "value": [
         {
-          "name": "WebRole1",
+          "name": "TestWebRole",
           "sku": {
             "name": "Standard_D1_v2",
             "capacity": "1"
           }
         },
         {
-          "name": "WorkerRole1",
+          "name": "TestWebRole",
           "sku": {
             "name": "Standard_D1_v2",
             "capacity": "1"
