@@ -1,0 +1,45 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "cloudServiceName": {
+      "value": "test001"
+    },
+    "location": {
+      "value": "centralus"
+    },
+    "deploymentLabel": {
+      "value": "test001_2022_09_16"
+    },
+    "packageSasUri": {
+      "value": "xxx"
+    },
+    "configurationSasUri": {
+      "value": "xxx"
+    },
+    "roles": {
+      "value": [
+        {
+          "name": "WebRole1",
+          "sku": {
+            "name": "Standard_D1_v2",
+            "capacity": "1"
+          }
+        },
+        {
+          "name": "WorkerRole1",
+          "sku": {
+            "name": "Standard_D1_v2",
+            "capacity": "1"
+          }
+        }
+      ]
+    },
+    "rdpPublicConfig": {
+      "value": "<PublicConfig>\r\n  <UserName>123</UserName>\r\n  <Expiration>12/21/2022 12:00:00 AM</Expiration>\r\n</PublicConfig>"
+    },
+    "rdpPrivateConfig": {
+      "value": "<PrivateConfig>\r\n  <Password>P456!@#qwe</Password>\r\n</PrivateConfig>"
+    }
+  }
+}
