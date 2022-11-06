@@ -1,0 +1,34 @@
+trigger:
+- master
+
+pool:
+  vmImage: windows-latest
+
+steps:
+
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/*.sln'
+    feedsToUse: 'select'
+    vstsFeed: '456f4bc1-77f6-4e9a-9a0b-798c305f7423'
+- task: VSBuild@1
+  inputs:
+    solution: '**\*.sln'
+    msbuildArgs: '/t:Publish /p:DeployOnBuild=true /p:AutomatedBuild=True /p:configuration=release /p:TargetProfile=Cloud /p:PublishDir=%SYSTEM_DEFAULTWORKINGDIRECTORY%/Debug/publish'
+
+    
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: 'Debug/publish'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: 'Project'
+    Contents: '**/bin/*.csdef'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: CmdLine@2
+  inputs:
+    script: 'dir %SYSTEM_ARTIFACTSDIRECTORY% /s'
