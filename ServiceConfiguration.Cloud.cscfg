@@ -12,4 +12,12 @@
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
     </ConfigurationSettings>
   </Role>
+  <NetworkConfiguration>
+    <VirtualNetworkSite name="test001VNet" />
+		  <AddressAssignments>
+				<InstanceAddress roleName="WebRole1"><Subnets><Subnet name="default" /></Subnets></InstanceAddress>
+      	<InstanceAddress roleName="WorkerRole1"><Subnets><Subnet name="default" /></Subnets></InstanceAddress>
+				<ReservedIPs><ReservedIP name="cses-prod" /></ReservedIPs>
+    	</AddressAssignments>
+  </NetworkConfiguration>
 </ServiceConfiguration>
