@@ -39,7 +39,7 @@
       "value": "<PublicConfig>\r\n  <UserName>123</UserName>\r\n  <Expiration>12/21/2022 12:00:00 AM</Expiration>\r\n</PublicConfig>"
     },
     "rdpPrivateConfig": {
-      "value": "<PrivateConfig>\r\n  <Password>P456!@#qwe</Password>\r\n</PrivateConfig>"
+      "value": "<PrivateConfig>\r\n  <Password><![CDATA[!Q2w3e4r5t]]></Password>\r\n</PrivateConfig>"
     }
   }
 }
