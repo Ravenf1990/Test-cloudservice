@@ -1,3 +1,8 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
 trigger:
 - master
 
@@ -16,19 +21,60 @@ steps:
   inputs:
     solution: '**\*.sln'
     msbuildArgs: '/t:Publish /p:DeployOnBuild=true /p:AutomatedBuild=True /p:configuration=release /p:TargetProfile=Cloud /p:PublishDir=%SYSTEM_DEFAULTWORKINGDIRECTORY%/Debug/publish'
-
     
 - task: CopyFiles@2
   inputs:
     SourceFolder: 'Debug/publish'
     Contents: '**'
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
 - task: CopyFiles@2
   inputs:
     SourceFolder: 'Project'
-    Contents: '**/bin/*.csdef'
+    Contents: '*.csdef'
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
 - task: CmdLine@2
   inputs:
     script: 'dir %SYSTEM_ARTIFACTSDIRECTORY% /s'
+
+- task: AzureFileCopy@4
+  inputs:
+    SourcePath: '$(Build.ArtifactStagingDirectory)/*'                                                            
+    azureSubscription: 'MAIC - Wicresoft - Azure - 15(a2d49d28-b5b1-48fe-83dc-ada50a035a99)'                                                    
+    Destination: 'AzureBlob'
+    storage: $(stg_account)                                                      
+    ContainerName: $(stg_container)                                     
+    BlobPrefix: $(stg_prefix)                                                     
+    AdditionalArgumentsForBlobCopy: '--recursive'
+
+- task: AzurePowerShell@5                                                     
+  inputs:
+    azureSubscription: 'MAIC - Wicresoft - Azure - 15(a2d49d28-b5b1-48fe-83dc-ada50a035a99)'  
+    ScriptType: 'InlineScript'
+    Inline: |
+      $account_name = ${env:STG_ACCOUNT}
+      $account_key = ${env:STG_KEY}
+      $context = New-AzStorageContext -StorageAccountName $account_name -StorageAccountKey $account_key
+      $sas = New-AzStorageAccountSASToken -Service Blob -ResourceType Service,Container,Object -Permission "rl" -ExpiryTime (Get-Date).AddMinutes(5) -Context $context
+      $cspkg = ${env:URL_CSPKG} + $sas
+      $cscfg = ${env:URL_CSCFG} + $sas
+      Write-Host $cspkg
+      Write-Host $cscfg
+      Write-Host ("##vso[task.setvariable variable=cspkg]$cspkg")                 
+      Write-Host ("##vso[task.setvariable variable=cscfg]$cscfg")                 
+    azurePowerShellVersion: 'LatestVersion'
+    
+- task: AzureResourceManagerTemplateDeployment@3                               
+  inputs:
+    deploymentScope: 'Resource Group'                                                             
+    azureResourceManagerConnection: 'MAIC - Wicresoft - Azure - 15(a2d49d28-b5b1-48fe-83dc-ada50a035a99)'                                                        
+    subscriptionId: 'a2d49d28-b5b1-48fe-83dc-ada50a035a99' 
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: 'rg-002'                                                                               
+    location: 'Australia Central'
+    templateLocation: 'Linked artifact'
+    csmFile: 'Template/CSES.template.json'
+    csmParametersFile: 'Template/CSES.parameter.json'
+    overrideParameters: '-packageSasUri $(cspkg) -configurationSasUri $(cscfg) -cloudServiceName cses4test002 -deploymentLabel deploy$(stg_prefix)'
+    deploymentMode: 'Incremental'            
