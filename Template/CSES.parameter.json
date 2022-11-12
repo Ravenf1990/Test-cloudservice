@@ -6,7 +6,7 @@
       "value": "test001"
     },
     "location": {
-      "value": "centralus"
+      "value": "southeastasia"
     },
     "deploymentLabel": {
       "value": "test001_2022_09_16"
@@ -27,7 +27,7 @@
           }
         },
         {
-          "name": "TestWebRole",
+          "name": "TestWorkerRole",
           "sku": {
             "name": "Standard_D1_v2",
             "capacity": "1"
